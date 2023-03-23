@@ -21,7 +21,6 @@ data "aws_vpc" "default" {
 resource "aws_instance" "blog" {
   ami                    = data.aws_ami.app_ami.id
   instance_type          = var.instance_type
-  subnet_id              = "subnet-ebe5ba8e"
   vpc_security_group_ids = [aws_security_group.blog.id]
   tags = {
     Name = "Learning Terraform"
