@@ -41,6 +41,23 @@ resource "aws_instance" "blog" {
   }
 }
 
+module "blog-autoscaling" {
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "6.9.0"
+  
+  name     = "blog"
+  min_size = 1
+  max_size = 2
+
+  vpc_zone_identifier = module.blog_vpc.public_subnets
+  target_group_arns   = module.alb.target_group_arns
+  security_groups     = [module.blog_sg.security_group_id]
+
+  image_id            = data.aws_ami.app_ami.id
+  instance_type       = var.instance_type
+
+}
+
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.0"
