@@ -14,8 +14,21 @@ data "aws_ami" "app_ami" {
   owners = ["979382823631"] # Bitnami
 }
 
-data "aws_vpc" "default" {
-  default = true
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = "dev"
+  cidr = "192.168.0.0/16"
+
+  azs             = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  public_subnets  = ["192.168.101.0/24", "192.168.102.0/24", "192.168.103.0/24"]
+
+  enable_nat_gateway = true
+
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
+  }
 }
 
 resource "aws_instance" "blog" {
@@ -32,7 +45,7 @@ module "blog_sg" {
   version = "4.17.1"
   name    = "blog"
   
-  vpc_id = data.aws_vpc.default.id
+  vpc_id = module.vpc.public_subnets[0]
   
   ingress_rules       = ["http-80-tcp","https-443-tcp","all-all"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
