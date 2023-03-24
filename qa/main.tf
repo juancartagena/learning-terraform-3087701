@@ -4,7 +4,7 @@ module "qa" {
     instance_type = "t3.micro"
 
     environment = {
-        name = qa
+        name = "qa"
         network_prefix = "172.24"
     }
 
